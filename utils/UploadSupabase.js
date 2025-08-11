@@ -1,4 +1,4 @@
-const { supabase } = require("../config/supabase")
+const  supabase  = require("../config/supabase")
 
 const uploadImageToSupabase = async (buffer, fileName, bucket = 'manddi') => {
   const { data, error } = await supabase.storage
