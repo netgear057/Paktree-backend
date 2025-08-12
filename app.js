@@ -7,6 +7,7 @@ const connectDB = require('./config/db');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var productsRouter = require('./routes/Products')
+var stripeRouter = require('./routes/stripe')
 const cors = require('cors');
 var app = express();
 connectDB();
@@ -21,12 +22,13 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 // app.use(cors());
 app.use(cors({
-  origin: process.env.ORIGIN_URL,
+  origin: process.env.CLIENT_URL,
   credentials: true
 }));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/products', productsRouter)
+app.use('/stripe', stripeRouter)
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));

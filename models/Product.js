@@ -15,6 +15,8 @@ const productSchema = new mongoose.Schema(
     area: String,
     phone: String,
     whatsapp: String,
+    featured: { type: Boolean, default: false },
+   featuredExpiresAt: { type: Date, default: null }
   },
   {
     timestamps: true,
