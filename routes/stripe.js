@@ -34,24 +34,24 @@ router.post("/create-checkout-session", async (req, res) => {
       }],
       mode: "payment",
       success_url: `${process.env.CLIENT_URL}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.CLIENT_URL}/profile`,
+      cancel_url: `${process.env.CLIENT_URL}/payment-success`,
       metadata: {
         postId: postId,
         userId: userId,
       }
     });
-
-    res.json({ url: session.url });
+    res.json({ url: session.url, data:session });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Payment session error" });
   }
 });
 
+
 // 2️⃣ Webhook to handle successful payments
 router.post("/webhook", bodyParser.raw({ type: "application/json" }), async (req, res) => {
   const sig = req.headers["stripe-signature"];
-
+console.log('webhook been hit')
   let event;
   try {
     event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
@@ -66,7 +66,7 @@ router.post("/webhook", bodyParser.raw({ type: "application/json" }), async (req
     const { postId } = session.metadata;
     await Post.findByIdAndUpdate(postId, {
       featured: true,
-      featuredExpiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days
+      featuredExpiresAt: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000) // 30 days
     });
   }
 
