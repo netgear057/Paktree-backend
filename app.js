@@ -9,12 +9,15 @@ var usersRouter = require('./routes/users');
 var productsRouter = require('./routes/Products')
 var stripeRouter = require('./routes/stripe')
 const cors = require('cors');
+const  startExpireFeaturedJob  = require('./utils/CronJob');
 var app = express();
 connectDB();
+startExpireFeaturedJob()
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+app.use('/stripe', stripeRouter)
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -28,7 +31,6 @@ app.use(cors({
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/products', productsRouter)
-app.use('/stripe', stripeRouter)
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
