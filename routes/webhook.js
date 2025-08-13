@@ -17,7 +17,6 @@ router.post(
   bodyParser.raw({ type: "application/json" }),
   async (req, res) => {
     const sig = req.headers["stripe-signature"];
-    console.log("✅ Webhook hit");
 
     let event;
     try {
