@@ -11,9 +11,11 @@ var stripeRouter = require('./routes/stripe')
 var webhookRouter = require('./routes/webhook')
 const cors = require('cors');
 const  startExpireFeaturedJob  = require('./utils/CronJob');
+const deleteOldProductsJob = require('./utils/DeleteExpireProductJob');
 var app = express();
 connectDB();
 startExpireFeaturedJob()
+deleteOldProductsJob()
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
