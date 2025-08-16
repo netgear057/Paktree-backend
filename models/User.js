@@ -18,7 +18,11 @@ const UserSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
-    password: { type: String, required: true }
+    password: { type: String, required: true },
+  role: {
+  type: String,
+  default: "user"
+},
 
 }, {
   timestamps: true, // Adds createdAt and updatedAt fields

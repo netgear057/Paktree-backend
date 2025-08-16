@@ -9,6 +9,7 @@ var usersRouter = require('./routes/users');
 var productsRouter = require('./routes/Products')
 var stripeRouter = require('./routes/stripe')
 var webhookRouter = require('./routes/webhook')
+const passport = require("./config/passport");
 const cors = require('cors');
 const  startExpireFeaturedJob  = require('./utils/CronJob');
 const deleteOldProductsJob = require('./utils/DeleteExpireProductJob');
@@ -29,6 +30,7 @@ app.use(cors({
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(passport.initialize());
 app.use('/webhook', webhookRouter)
 app.use(express.json());
 

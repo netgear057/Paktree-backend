@@ -5,6 +5,7 @@ const Product = require('../models/Product');
 const uploadImageToSupabase = require('../utils/UploadSupabase');
 const compressToProductSize = require('../utils/FileValidator');
 const { default: mongoose } = require('mongoose');
+const { authenticate, authorize } = require('../middleware/auth');
 const router = express.Router()
 
 
@@ -131,7 +132,7 @@ router.get('/', async (req, res) => {
 
 // Get a user ads
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', authenticate, async (req, res) => {
   try {
     const { id } = req.params;
     const page = parseInt(req.query.page) || 1;
