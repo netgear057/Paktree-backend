@@ -131,7 +131,7 @@ router.get('/', async (req, res) => {
 });
 
 // Get a user ads
-
+console.log('server')
 router.get('/:id', authenticate, async (req, res) => {
   try {
     const { id } = req.params;
