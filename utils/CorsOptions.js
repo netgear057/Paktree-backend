@@ -1,8 +1,7 @@
 
 
 const allowedOrigins = process.env.ALLOWED_ORIGINS.split(",");
-
-export const corsOptions = {
+ const corsOptions = {
   origin: function (origin, callback) {
     if (!origin) return callback(null, true); // allow requests like Postman or mobile apps
     if (allowedOrigins.includes(origin)) {
@@ -13,3 +12,4 @@ export const corsOptions = {
   },
   credentials: true
 };
+module.exports = corsOptions
