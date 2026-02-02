@@ -33,7 +33,6 @@ router.post('/', upload.single('image'), async(req, res) => {
     } = req.body
     
     let imageUrl = null
-
     if (req.file) {
   const fileName = `${Date.now()}-${req.file.originalname.replace(/\s+/g, '-')}`;
   const compressedBuffer = await compressToProductSize(req.file.buffer, req.file.mimetype);
@@ -64,7 +63,7 @@ router.post('/', upload.single('image'), async(req, res) => {
 
 // Get all products
 
-router.get('/', async (req, res) => {
+router.get('/',authenticate, async (req, res) => {
   try {
     const {
       id,
@@ -141,6 +140,8 @@ router.get('/:id', authenticate, async (req, res) => {
     const matchStage = {
       userId: id
     };
+    console.log(id,'id from rew');
+    
     const pipeline = [
       { $match: matchStage },
       { $sort: { createdAt: -1 } },

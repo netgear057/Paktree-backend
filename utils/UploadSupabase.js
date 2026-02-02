@@ -1,6 +1,8 @@
 const  supabase  = require("../config/supabase")
 
-const uploadImageToSupabase = async (buffer, fileName, bucket = 'manddi') => {
+const uploadImageToSupabase = async (buffer, fileName, bucket = 'maiProject') => {
+
+  console.log(fileName,'file form supa')
   const { data, error } = await supabase.storage
     .from(bucket)
     .upload(`products/${fileName}`, buffer, {

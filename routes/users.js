@@ -55,10 +55,24 @@ router.post("/register", async (req, res) => {
     // Exclude password from response
     const { password: _, ...user } = newUser.toObject();
 
+     res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+    });
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+    });
+
     res.status(201).json({
       user,
-      accessToken,
-      refreshToken, // 👈 now sent in body, not cookie
+      // accessToken,
+      // refreshToken, // 👈 now sent in body, not cookie
       message: "User registered successfully",
     });
   } catch (err) {
@@ -99,10 +113,23 @@ router.post("/login", async (req, res) => {
 
     const { password: _, ...userData } = user.toObject();
 
+     res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+    });
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+    });
     res.json({
       user: userData,
-      accessToken,
-      refreshToken, // 👈 return here
+      // accessToken,
+      // refreshToken, // 👈 return here
     });
   } catch (err) {
     console.error(err);
@@ -112,21 +139,34 @@ router.post("/login", async (req, res) => {
 
 // ======================== REFRESH ========================
 router.post("/refresh", (req, res) => {
-  const { refreshToken } = req.body; // 👈 get from body instead of cookies
-  if (!refreshToken)
+  const refreshToken = req.cookies.refreshToken;
+
+  if (!refreshToken) {
     return res.status(401).json({ message: "No refresh token provided" });
+  }
 
   jwt.verify(refreshToken, process.env.REFRESH_SECRET, (err, user) => {
-    if (err) return res.status(403).json({ message: "Invalid refresh token" });
+    if (err) {
+      return res.status(403).json({ message: "Invalid refresh token" });
+    }
 
     const accessToken = generateAccessToken({
       id: user.id,
       username: user.username,
       role: user.role,
     });
-    res.json({ accessToken });
+
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+    });
+
+    return res.status(200).json({ message: "Access token refreshed" });
   });
 });
+
 
 // ======================== FORGET PASSWORD ========================
 
@@ -205,4 +245,43 @@ router.post("/reset-password/:token", async (req, res) => {
   }
 });
 
+//==============================ME=======================================
+router.get("/me", authenticate, async (req, res) => {
+  // console.log(req.user,'req from me')
+  try {
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const user = await User.findById(req.user.id).select("-password");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json({ user });
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+router.post("/logout", (req, res) => {
+  res.clearCookie("accessToken", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+  });
+
+  res.clearCookie("refreshToken", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+  });
+
+  res.json({ message: "Logged out successfully" });
+});
+
 module.exports = router;
+
