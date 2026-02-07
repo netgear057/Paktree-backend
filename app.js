@@ -9,7 +9,11 @@ var usersRouter = require('./routes/users');
 var productsRouter = require('./routes/Products')
 var stripeRouter = require('./routes/stripe')
 var webhookRouter = require('./routes/webhook')
-const passport = require("./config/passport");
+var oauthRouter = require("./routes/auth")
+const passport = require("passport");
+
+ require("./config/jwt.strategy");
+ require("./config/google.strategy");
 const cors = require('cors');
 const  startExpireFeaturedJob  = require('./utils/CronJob');
 const deleteOldProductsJob = require('./utils/DeleteExpireProductJob');
@@ -33,6 +37,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(passport.initialize());
 app.use('/webhook', webhookRouter)
+app.use('/auth', oauthRouter);
 app.use(express.json());
 
 app.use('/', indexRouter);
@@ -41,7 +46,7 @@ app.use('/products', productsRouter)
 app.use('/stripe', stripeRouter)
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  next(createError(404));
+  next(createError(404));  
 });
 
 // error handler
