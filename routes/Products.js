@@ -5,7 +5,7 @@ const Product = require('../models/Product');
 const uploadImageToSupabase = require('../utils/UploadSupabase');
 const compressToProductSize = require('../utils/FileValidator');
 const { default: mongoose } = require('mongoose');
-const { authenticate, authorize } = require('../middleware/auth');
+const { authenticate, authorize } = require('../middleware/authMiddleware');
 const router = express.Router()
 
 

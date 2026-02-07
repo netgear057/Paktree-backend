@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 const sgMail = require("@sendgrid/mail");
-const { authenticate, authorize } = require("../middleware/auth");
+const { authenticate, authorize } = require("../middleware/authMiddleware");
 
 const generateAccessToken = (user) => {
   return jwt.sign(user, process.env.ACCESS_SECRET, { expiresIn: "15m" });
@@ -60,6 +60,8 @@ router.post("/register", async (req, res) => {
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
+      maxAge: 15 * 60 * 1000, // 15 min
+
     });
 
     res.cookie("refreshToken", refreshToken, {
@@ -67,6 +69,8 @@ router.post("/register", async (req, res) => {
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+
     });
 
     res.status(201).json({
@@ -118,6 +122,8 @@ router.post("/login", async (req, res) => {
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
+      maxAge: 15 * 60 * 1000, // 15 min
+
     });
 
     res.cookie("refreshToken", refreshToken, {
@@ -125,6 +131,8 @@ router.post("/login", async (req, res) => {
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+
     });
     res.json({
       user: userData,
@@ -140,7 +148,6 @@ router.post("/login", async (req, res) => {
 // ======================== REFRESH ========================
 router.post("/refresh", (req, res) => {
   const refreshToken = req.cookies.refreshToken;
-
   if (!refreshToken) {
     return res.status(401).json({ message: "No refresh token provided" });
   }
@@ -161,6 +168,8 @@ router.post("/refresh", (req, res) => {
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
+      maxAge: 15 * 60 * 1000, // 15 min
+
     });
 
     return res.status(200).json({ message: "Access token refreshed" });
