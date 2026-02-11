@@ -20,8 +20,8 @@ const deleteOldProductsJob = require('./utils/DeleteExpireProductJob');
 const { corsOptions } = require('./utils/CorsOptions');
 var app = express();
 connectDB();
-startExpireFeaturedJob()
-deleteOldProductsJob()
+// startExpireFeaturedJob()
+// deleteOldProductsJob()
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -36,7 +36,9 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(passport.initialize());
-app.use('/webhook', webhookRouter)
+// app.use('/webhook', webhookRouter)
+app.use('/webhook', express.raw({ type: 'application/json' }), webhookRouter);
+
 app.use('/auth', oauthRouter);
 app.use(express.json());
 
